@@ -1,2 +1,2 @@
 # Micricontr
-Micricontr
+Code fo microcontroller 
