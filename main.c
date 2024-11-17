@@ -91,8 +91,6 @@ Beg_res:
 			 while((GPIOB->IDR & GPIO_Pin_0));
 				 u32 temp_start_addr = (u32)&Array_CommandIn[0];
 				 DMA1_Chan2_init_set(temp_start_addr,7,true);
-
-//формируем импульс
 		    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
 		    	 delay_us(10);
 		    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
@@ -159,9 +157,7 @@ Beg_res:
   		    	  if(CountBuffForDataPause==1)
   	  		    	  {
   	  		    	  CRC_PauseData = CRC_CalcBlockCRC((u32*)&ArrayForOutDataPuse1[2],Quantity_PauseData_forCRC32);
-
-  	  		    	    //в последние элементы записываем CRC32
-  	  		    	    ArrayForOutDataPuse1[QuantityTransmitWord16DataPause_SPI1]  = LSW(CRC_PauseData);
+ 	  		    	    ArrayForOutDataPuse1[QuantityTransmitWord16DataPause_SPI1]  = LSW(CRC_PauseData);
   	  		    	    ArrayForOutDataPuse1[QuantityTransmitWord16DataPause_SPI1+1]= MSW(CRC_PauseData);
   	  		    	  }
 
@@ -173,7 +169,6 @@ Beg_res:
  						 while(!(GPIOB->IDR & GPIO_Pin_0));
  						 while((GPIOB->IDR & GPIO_Pin_0));
 
- 			     		//используем этот канал для передачи ответа на команду через SPI
 
  					//	 SPI1->CR1 |=SPI_CR1_DFF; //SPI1 to 16-bit mode
  						 SPI1_MAIN_Init_16();
@@ -182,7 +177,6 @@ Beg_res:
  			     		//DMA to 16 bit
    DMA1_Chan3_init_set8_16(Temp_start_addr, QuantityTransmitWord16DataPause_SPI1+2, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord); 
 
-   //формируем импульс
  				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
  				    	 delay_us(10);
  				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
@@ -208,7 +202,7 @@ Beg_res:
  		  	if(Array_CommandIn[0]==Command_DataRequest)//&&CountTransmitData_SPI1=0)//&&Count_SPI1>0)//Count_SPI1>0????????????????????????
  		    	   {
 
- 		    		QuantityTransmitByte_SPI1=CountTotal_DataOut;//сколько насчиталось байт в Timer4
+ 		    		QuantityTransmitByte_SPI1=CountTotal_DataOut;
  		
  		    	    Array_Total_DataOut[0]=Command_DataRequest; 
  		    	    Array_Total_DataOut[1]=0x0; 

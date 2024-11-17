@@ -201,7 +201,7 @@ void Set_Data_for_Accelerometer(void)
 	ZeroAddData_from_Accelerometer();
 
 
-	Quantity_Total_Data_Byte_Out=3;  //3 - äëÿ îòâåòíûõ áàéòîâ íà êîìàíäó "çàïðîñ äàííûõ"
+	Quantity_Total_Data_Byte_Out=3;
 	Quantity_Total_Data_Byte_Accelerometer=0;
 	Error_AllocationMemory=0;
 }

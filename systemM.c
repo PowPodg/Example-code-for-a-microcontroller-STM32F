@@ -12,8 +12,7 @@ volatile u16 Count_DMA_TIM3;
  volatile bool FlagDMA2_Channel2_Trans_Yes;
  volatile bool FlagDMA2_Channel1_Trans_Yes;
 
- volatile bool FlagForDataPause=false; //äëÿ ñòàðòà ñáîðà äàííûõ  âïàóçå ìåæäó îêîí÷àíèåì ñïàäà è ôðîíòîì ñèãí. òîêîâàÿ ïàóçà
-                                      // ñòàðò êîãäà true
+ volatile bool FlagForDataPause=false; 
 
  u8 TempForDataGyr;
 
@@ -454,10 +453,6 @@ void DMA1_Chan3_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 	  /* Enable DMA1 channel3 */
 	  DMA_Cmd(DMA1_Channel3, ENABLE);
 
-	  //GPIO_WriteBit(GPIOA,GPIO_Pin_8,Bit_SET);
-
-  // Ïðîèñõîäÿò ñáîè ïðè ïåðåäà÷å, åñëè çäåñü èíèöèàëèçèðîâàòü
-	//  SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Tx,ENABLE);// DMA immediately writes 1 element array data into  SPI_DR  ??????
 }
 //-----------------------------------------------------------------------------------------------------
 //ïåðåäà÷à íà âûõîä (SPI1) äàííûõ
@@ -488,10 +483,6 @@ void DMA1_Chan3_init_set8_16(u32 MemoryBaseAddr, u16 BufferSize, u16 DataSizePer
 	  /* Enable DMA1 channel3 */
 	  DMA_Cmd(DMA1_Channel3, ENABLE);
 
-	  //GPIO_WriteBit(GPIOA,GPIO_Pin_8,Bit_SET);
-
-  // Ïðîèñõîäÿò ñáîè ïðè ïåðåäà÷å, åñëè çäåñü èíèöèàëèçèðîâàòü
-	//  SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Tx,ENABLE);// DMA immediately writes 1 element array data into  SPI_DR  ??????
 }
 
 //-------------------------------------------------------------
@@ -579,15 +570,7 @@ void DMA1_Channel2_IRQHandler(void)
 
 
 //-----------------------------------------
-//----------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-/* TIM3 request for GK
- * Choice Channel 6 for DMA1, because TIM3 CH1 can generate a DMA request to this channel only
- * save (storage) value CNT TIM8 to DataCNT_TIM8
 
- *
- */
 
 void DMA1_Chan6_init(void)
 {
@@ -866,8 +849,6 @@ void DMA2_Channel1_IRQHandler(void)
   if(Count_Gyroscope_interrupt==6)
   {
 	GPIO_WriteBit(GPIOA,GPIO_Pin_15,Bit_SET); //'MSEL1' -> '1' - end read data from gyroscope by SPI3
-	//Data_from_Gyroscope_Byte[0]=0x01; Data_from_Gyroscope_Byte[1]=0xcf; Data_from_Gyroscope_Byte[2]=0x20;
-	//ïåðåñòàâëÿåì 0 è 2 áàéòû
 	TempForDataGyr=Data_from_Gyroscope_Byte[0];Data_from_Gyroscope_Byte[0]= Data_from_Gyroscope_Byte[2]; Data_from_Gyroscope_Byte[2]=TempForDataGyr;
 	Data_fromGyroscope = (u32*)&Data_from_Gyroscope_Byte[0];
 	Data_Giro_Gyroscope_temp = *Data_fromGyroscope;
