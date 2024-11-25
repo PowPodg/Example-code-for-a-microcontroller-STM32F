@@ -23,19 +23,7 @@ USART_InitTypeDef USART_InitStruct;
 USART_StructInit(&USART_InitStruct);
 USART_InitStruct.USART_BaudRate=4500000;//4.5 MHz (for AD5160 Fclk max=25 MHz)
 USART_InitStruct.USART_Mode = USART_Mode_Tx;
-/*
-SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
-SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
-SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
-//SPI_SSOutputCmd(SPI1,DISABLE);
-SPI_InitStructure.SPI_NSS = SPI_NSS_Hard
-SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2
-SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-//The CRC polynomial (0007h) is the reset value of this register.
-SPI_InitStructure.SPI_CRCPolynomial = 0x07;
-*/
+
 USART_Init(USART3, &USART_InitStruct);
 
 /* Enable SPI */

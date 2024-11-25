@@ -12,31 +12,17 @@ u32 TimeDelay=0;
 
 int main(void)
 {
-
 	Set_Data_for_Timer();
-
 	Flag_Command_Reset_SpeedMove_Accelerometer=false;
 	Flag_Command_Reset_Azimuth_Giroscope = false;
 	Flag_Command_InitModulGyroscopeAcseler=false;
 	FlagDMA1_Channel3_Trans_Yes=false;
 
-
 	Set_Data_for_Accelerometer();
 	Set_Data_for_Gyroscope();
-
-//	Arr_SetTimer_Default(); //for sampling I,U
-
-
 	Init_System_Clock();
-
-
 	NVIC_Configuration();
-
-
 	Ports_Config();
-
-	//RCC_MCOConfig(RCC_MCO_SYSCLK);
-	//while(1);
 
 	DMA1_Chan6_init();  //for save CNT TIM8
 	DMA1_Chan5_init();  //for Tx SPI2
@@ -56,14 +42,9 @@ int main(void)
 	Timer4_Init();
 	Timer3_Init();
 	Timer8_Init(); // for GK
-
 	Set_Data_for_SPI1_MAIN();
-
 	USART_SetGain_Init();
-//Rwa(D)~Rab* (256-D)/256  - USART_SetGain_SendData(D)
 	USART_SetGain_SendData(0);//- 5k
-
-	//initial timer for U, I
 	Timer1_Init();
 
 	ADC1_I_Init();
@@ -77,14 +58,9 @@ int main(void)
 	// Arr_SetTimer_for_Sampling_U_I = NULL;
 
 	 SampleFilter_init(&sf);
-
-
 		while(1)//||Flag_Command_Reset_SpeedMove_Accelerometer
 	    {
-			
-
-Beg_res:
-			
+Beg_res:		
 			 while(FlagDMA1_Channel3_Trans_Yes||FlagDMA1_Channel2_Trans_Yes);
 			
 			 while(!(GPIOB->IDR & GPIO_Pin_0));
@@ -93,9 +69,7 @@ Beg_res:
 				 DMA1_Chan2_init_set(temp_start_addr,7,true);
 		    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
 		    	 delay_us(10);
-		    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
-
-		    	
+		    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);		    	
 		    	 Setdelay_us(2000);
 		    	 bool FlagTimeOut=FALSE;
              while(!FlagDMA1_Channel2_Trans_Yes&&!FlagTimeOut)//ожидаем пока примется входной массив через SPI1 или ждем 10 мс
@@ -105,17 +79,9 @@ Beg_res:
             	 }
              SysTick->CTRL=0;
              if(FlagTimeOut) {goto Beg_res;}
-
-
-
              FlagDMA1_Channel2_Trans_Yes=false;
-  //================================================================ommand_PuseDataRequest========================================================
-  //================================================================================================================================================
  		  	if(Array_CommandIn[0]==Command_PuseDataRequest)//&&CountTransmitData_SPI1=0)//&&Count_SPI1>0)//Count_SPI1>0????????????????????????
   		    	   {
-
- 		  
-  		    	  //  Array_Total_DataOut[0]=0x77;
  		  		if(CountBuffForDataPause==0)
  		  		{
  			  		QuantityTransmitWord16DataPause_SPI1=indexForDataPause;
@@ -137,7 +103,6 @@ Beg_res:
   		    	    if((QuantityTransmitWord16DataPause_SPI1-2)%2!=0)
   		    	    	{
   		    	    	Quantity_PauseData_forCRC32 = ((QuantityTransmitWord16DataPause_SPI1-2)/2)+1;
-  		    	    	//заполняем нулями до кратного 4 нужное к-во элементов массива для расета CRC32
   		    	    	if(CountBuffForDataPause==0)
   		    	    	for(i=QuantityTransmitWord16DataPause_SPI1;i<= (QuantityTransmitWord16DataPause_SPI1 + (4-((QuantityTransmitWord16DataPause_SPI1-2)%4)));i++)ArrayForOutDataPuse[i]=0;
 
@@ -148,33 +113,21 @@ Beg_res:
   		    	  if(CountBuffForDataPause==0)
   		    	  {
   		    	  CRC_PauseData = CRC_CalcBlockCRC((u32*)&ArrayForOutDataPuse[2],Quantity_PauseData_forCRC32);
-
-
   		    	    ArrayForOutDataPuse[QuantityTransmitWord16DataPause_SPI1]  = LSW(CRC_PauseData);
   		    	    ArrayForOutDataPuse[QuantityTransmitWord16DataPause_SPI1+1]= MSW(CRC_PauseData);
   		    	  }
-
   		    	  if(CountBuffForDataPause==1)
   	  		    	  {
   	  		    	  CRC_PauseData = CRC_CalcBlockCRC((u32*)&ArrayForOutDataPuse1[2],Quantity_PauseData_forCRC32);
  	  		    	    ArrayForOutDataPuse1[QuantityTransmitWord16DataPause_SPI1]  = LSW(CRC_PauseData);
   	  		    	    ArrayForOutDataPuse1[QuantityTransmitWord16DataPause_SPI1+1]= MSW(CRC_PauseData);
   	  		    	  }
-
-  
-
-   DMA1_Chan2_init_set8_16((u32)&Temp_start_addr,(QuantityTransmitWord16DataPause_SPI1+2),false, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord);
-
- 						 
- 						 while(!(GPIOB->IDR & GPIO_Pin_0));
+   DMA1_Chan2_init_set8_16((u32)&Temp_start_addr,(QuantityTransmitWord16DataPause_SPI1+2),false, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord);						 
+						 while(!(GPIOB->IDR & GPIO_Pin_0));
  						 while((GPIOB->IDR & GPIO_Pin_0));
-
-
- 					//	 SPI1->CR1 |=SPI_CR1_DFF; //SPI1 to 16-bit mode
  						 SPI1_MAIN_Init_16();
  						if(CountBuffForDataPause==0)Temp_start_addr = (u32)&ArrayForOutDataPuse[0];
  						if(CountBuffForDataPause==1)Temp_start_addr = (u32)&ArrayForOutDataPuse1[0];
- 			     		//DMA to 16 bit
    DMA1_Chan3_init_set8_16(Temp_start_addr, QuantityTransmitWord16DataPause_SPI1+2, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord); 
 
  				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
@@ -182,22 +135,11 @@ Beg_res:
  				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
 
  						while(!FlagDMA1_Channel2_Trans_Yes);
-
- 					//	SPI1->CR1 &= ~SPI_CR1_DFF; //SPI1 to 8-bit mode
  						SPI1_MAIN_Init();
 
  						FlagDMA1_Channel2_Trans_Yes =false;
  						FlagDMA1_Channel3_Trans_Yes=false;
-
- 						//    Temp_start_addr = (u32)&Array_CommandIn[0];
- 						//    DMA1_Chan2_init_set(Temp_start_addr,5,true);
-
- 					   //     GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-
-  		            //----------------------
   		    	   }
-//================================================================================================================================================
-//================================================================================================================================================
  			//###############################################Command_DataRequest#######################################
  		  	if(Array_CommandIn[0]==Command_DataRequest)//&&CountTransmitData_SPI1=0)//&&Count_SPI1>0)//Count_SPI1>0????????????????????????
  		    	   {
@@ -216,48 +158,25 @@ Beg_res:
  		    	    	}
  		    	    CRC_ResetDR();
  		    	    CRC_Data = CRC_CalcBlockCRC((u32*)&Array_Total_DataOut[2],Quantity_Data_forCRC32);
-
-
  		    	    Array_Total_DataOut[QuantityTransmitByte_SPI1]=LSB0(CRC_Data);
  		    	    Array_Total_DataOut[QuantityTransmitByte_SPI1+1]=LSB1(CRC_Data);
  		    	    Array_Total_DataOut[QuantityTransmitByte_SPI1+2]=LSB2(CRC_Data);
  		    	    Array_Total_DataOut[QuantityTransmitByte_SPI1+3]=LSB3(CRC_Data);
-
-
-  DMA1_Chan2_init_set8_16((u32)&Temp_start_addr,(QuantityTransmitByte_SPI1+4)/2,false, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord);
-
-						
+  DMA1_Chan2_init_set8_16((u32)&Temp_start_addr,(QuantityTransmitByte_SPI1+4)/2,false, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord);					
 						 while(!(GPIOB->IDR & GPIO_Pin_0));
 						 while((GPIOB->IDR & GPIO_Pin_0));
-
-
-
-					//	 SPI1->CR1 |=SPI_CR1_DFF; //SPI1 to 16-bit mode
 						 SPI1_MAIN_Init_16();
 			     		Temp_start_addr = (u32)&Array_Total_DataOut[0];
 			     		//DMA to 16 bit
-  DMA1_Chan3_init_set8_16(Temp_start_addr, (QuantityTransmitByte_SPI1+4)/2, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord); // пришлось полностью переинициализировать DMA,
-			     		                                                             
-
-
+  DMA1_Chan3_init_set8_16(Temp_start_addr, (QuantityTransmitByte_SPI1+4)/2, DMA_PeripheralDataSize_HalfWord, DMA_MemoryDataSize_HalfWord); 	     		                                                             
 				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
 				    	 delay_us(10);
 				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
-
 						while(!FlagDMA1_Channel2_Trans_Yes);
-
-					//	SPI1->CR1 &= ~SPI_CR1_DFF; //SPI1 to 8-bit mode
 						SPI1_MAIN_Init();
 
 						FlagDMA1_Channel2_Trans_Yes =false;
 						FlagDMA1_Channel3_Trans_Yes=false;
-
-						//    Temp_start_addr = (u32)&Array_CommandIn[0];
-						//    DMA1_Chan2_init_set(Temp_start_addr,5,true);
-
-					   //     GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-
- 		            //----------------------
  		    	   }
  //#######################################Command_InitModulGyroscopeAcseler##########################################################################
              if(Array_CommandIn[0]==Command_InitModulGyroscopeAcseler)
@@ -315,56 +234,24 @@ Beg_res:
 
 		   			Quantity_Total_Data_Byte_U_I = QuantityReceiveByteUI_SPI + QuantityReceiveByteUI_SPI;// for U and I
 		   			Quantity_Total_Data_Byte_Out = Quantity_Total_Data_Byte_Out + Quantity_Total_Data_Byte_U_I;
-		      //  	Array_Total_DataOut =  realloc(Array_Total_DataOut, Quantity_Total_Data_Byte_Out);
-
 		           	QuantityReceiveDataAcceler_SPI = (10*Time_BeforeStartADC24_SPI+8*QuantityPointsMainSonde_SPI)/500; //общее время токовая пауза + время для спада с зонда; 500 мкс - миним. время опроса в этом модуле
 		            QuantityReceiveByteAcceler_SPI = QuantityReceiveDataAcceler_SPI * 2;
-
-		          // 	Arr_SetTimer_for_Sampling_Acceler = realloc(Arr_SetTimer_for_Sampling_Acceler, QuantityReceiveByteAcceler_SPI+4);//4 байта - на всякий случай резерв  //Array for Timer4
-
-
 		         	Quantity_Total_Data_Byte_Accelerometer = QuantityReceiveDataAcceler_SPI * 8 + 6 + 36 + 2;
-
-		         	//angular rate   GyroscopeSum  -   4 byte (s32)
-		         	//Temperature - 2 byte (u16)
 		         	Quantity_Total_Data_Byte_Gyroscope = 4+2;
-
-		         	//value GK  -   2 byte (u16)
-		         	//Time (quantity counts for 500us) - 2 byte (u16)
 		         	Quantity_Total_Data_Byte_GK = 2+2;
-		         	//+3 для ответа в команде "запрос данных", чтобы одним массивом
-		         	//+4 для CRC суммы в конце массива
-		         	//Array_Total_DataOut=NULL;
-
 		         	Quantity_Total_Data_Byte_Out = Quantity_Total_Data_Byte_Out + Quantity_Total_Data_Byte_Accelerometer+Quantity_Total_Data_Byte_Gyroscope+Quantity_Total_Data_Byte_GK+3+4;
-		         //	Array_Total_DataOut =  realloc(Array_Total_DataOut,Quantity_Total_Data_Byte_Out+10);//не работает ??????????????????? пришлось статически обьявлять
-
-
 			     		DMA1_Chan2_init_set((u32)&Temp_start_addr,QuantityCommandBytesOutSPI1,false);
-
-
 						 while(!(GPIOB->IDR & GPIO_Pin_0));
 						 while((GPIOB->IDR & GPIO_Pin_0));
-
-
 			     		Temp_start_addr = (u32)&Array_CommandOut[0];
 			     		DMA1_Chan3_init_set(Temp_start_addr, QuantityCommandBytesOutSPI1);  
-
 				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
 				    	 delay_us(10);
 				    	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_RESET);
 
 						while(!FlagDMA1_Channel2_Trans_Yes);
-
-
 						FlagDMA1_Channel2_Trans_Yes =false;
 						FlagDMA1_Channel3_Trans_Yes=false;
-
-						//    Temp_start_addr = (u32)&Array_CommandIn[0];
-						//    DMA1_Chan2_init_set(Temp_start_addr,5,true);
-
-					    //    GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-
              }
  //###############################################Command_Reset_Azimuth_Giroscope#######################################################
  			      if(Array_CommandIn[0]==Command_Reset_Azimuth_Giroscope)
@@ -379,13 +266,9 @@ Beg_res:
  					Array_CommandOut[5]=0x0;
  					Array_CommandOut[6]=0x0;
  
-				     		DMA1_Chan2_init_set((u32)&Temp_start_addr,7,false);
-
-							
+				     		DMA1_Chan2_init_set((u32)&Temp_start_addr,7,false);						
 							 while(!(GPIOB->IDR & GPIO_Pin_0));
 							 while((GPIOB->IDR & GPIO_Pin_0));
-
-
 				     		Temp_start_addr = (u32)&Array_CommandOut[0];
 				     		DMA1_Chan3_init_set(Temp_start_addr, 7);  
                       
@@ -397,20 +280,13 @@ Beg_res:
 
 							FlagDMA1_Channel2_Trans_Yes =false;
 							FlagDMA1_Channel3_Trans_Yes=false;
-
-							//    Temp_start_addr = (u32)&Array_CommandIn[0];
-							 //   DMA1_Chan2_init_set(Temp_start_addr,5,true);
-
-						     //   GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-
  		     }
 
 
 //#################################################################Command_Reset_SpeedMove_Accelerometer#########################################
              if(Array_CommandIn[0]==Command_Reset_SpeedMove_Accelerometer)
               {
-            	// Flag_Command_Reset_SpeedMove_Accelerometer=true;
-
+ 
 					     		Sum_forSpeed_X = 0;
 					    		Sum_forSpeed_Y = 0;
 					    		Sum_forSpeed_Z = 0;
@@ -420,15 +296,12 @@ Beg_res:
 					    		Sum_forMove_Z = 0;
 
 					    	    Array_CommandOut[0] = 0x77;
-					    	    Array_CommandOut[1]=Command_Reset_SpeedMove_Accelerometer; // номер команды
+					    	    Array_CommandOut[1]=Command_Reset_SpeedMove_Accelerometer; 
 					    	    Array_CommandOut[2]=0x0; 
 					    		 Array_CommandOut[3]=0x0;
 					    	 					Array_CommandOut[4]=0x0;
 					    	 					Array_CommandOut[5]=0x0;
 					    	 					Array_CommandOut[6]=0x0;
-					          	//------------------------------старт ответа на команду-----------------
-
-				    	     //   Temp_start_addr=(u32)&Array_CommandIn[0];
 					     		DMA1_Chan2_init_set((u32)&Temp_start_addr,7,false);
 
 						
@@ -448,15 +321,7 @@ Beg_res:
 								FlagDMA1_Channel2_Trans_Yes =false;
 								FlagDMA1_Channel3_Trans_Yes=false;
 
-								//    Temp_start_addr = (u32)&Array_CommandIn[0];
-								//    DMA1_Chan2_init_set(Temp_start_addr,5,true);
-
-							    //   GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-
-								
               }
-
-//-------------------------------------------------------------------------------------------
 
 	    }
 }

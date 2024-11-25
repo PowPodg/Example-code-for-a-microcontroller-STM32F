@@ -114,22 +114,6 @@ void Init_System_Clock(void)
 
 
 }
-//----------------------------------------------------------------------------------
-/*
-void SysTick_Handler(void)
-{
-        usTicks++;              // increment system timer
-}*/
-//------------------------------delay time in (us)
-/*void delay_us(u32 us)
-{
-	    SysTick_Config(72); //system timer enable use for delay (1us)
-	    usTicks=0;
-        startTicks = usTicks;
-        while((usTicks - startTicks) < us);     //
-        SysTick->CTRL  = 0; //Counter disabled
-}
-*/
 //-------without interrupt--------------us=inValue
 void delay_us(u32 inValue)
 {
@@ -155,24 +139,13 @@ void Setdelay_us(u32 inValue)
 void NVIC_Configuration(void)
 {
     NVIC_InitTypeDef NVIC_InitStructure;
-
-    // Set the Vector Table base location at 0x08000000
-
-   // NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
-
-    // Configure one bit for preemption priority - Group 1
-
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
-
-
     // for PC4 pin4 - enable the EXTI4_IRQHandler Interrupt vector - äëÿ ïðåðûâàíèÿ îò ñèãíàëà òîêîâîé ïàóçû (ëèíèÿ 'Res')
     NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-
-
     // for PC5 pin5 - enable the EXTI9_5 (23) Interrupt vector
 
     NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
@@ -180,21 +153,6 @@ void NVIC_Configuration(void)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-/*
-    //  enable the SPI1 Interrupt vector
-     NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
-     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-     NVIC_Init(&NVIC_InitStructure);
-*/
-     //  enable the SPI2 Interrupt vector
-/*      NVIC_InitStructure.NVIC_IRQChannel = SPI2_IRQn;
-      NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-      NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-      NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-      NVIC_Init(&NVIC_InitStructure);
-*/
    //  enable the TIM1 Capture Compare Interrupt vector
      NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
      NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
@@ -270,22 +228,7 @@ void NVIC_Configuration(void)
               NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
               NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
               NVIC_Init(&NVIC_InitStructure);
-
-
-
-          //  enable the TIM5_IRQn for TIM5 Interrupt vector
-      /*       NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
-             NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-             NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-             NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-             NVIC_Init(&NVIC_InitStructure);
-        */
-
 }
-//---------------------------initial DMA1 for data I---------------------------------
-/*
- * Choice Channel 1 for DMA1, because ADC1 can generate a DMA request to this channel only
- */
 //------------------------------------------------------------------------------------------
 void DMA1_Chan1_init(void)
 {
@@ -340,10 +283,6 @@ void DMA1_Chan1_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 	//  ADC_DMACmd(ADC1, ENABLE);
 }
 //---------------------------initial DMA2 for data U---------------------------------
-/*
- * Choice Channel 5 for DMA2, because ADC3 can generate a DMA request to this channel only
- *
- */
 void DMA2_Chan5_init(void)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -363,13 +302,8 @@ void DMA2_Chan5_init(void)
 	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable; //Memory to memory mode disabled
 	  DMA_Init(DMA2_Channel5, &DMA_InitStructure);
-
-	  /* Enable DMA2 channel5 */
-	 // DMA_Cmd(DMA2_Channel5, ENABLE);
 }
 //----------------------------------------
-//äëÿ ñ÷èòûâàíèÿ äàííûõ ñ ADC3 â ìàññèâ
-//ADC3 ãåíåðèðóåò çàïðîñ DMA, à ADC3 çàïóñêàåò Timer 1
 void DMA2_Chan5_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -396,11 +330,6 @@ void DMA2_Chan5_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 }
 
 //-----------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------
-/*
- * Choice Channel 3 for DMA1, because SPI1 Tx can generate a DMA request to this channel only
- *
- */
 void DMA1_Chan3_init(void)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -420,12 +349,8 @@ void DMA1_Chan3_init(void)
 	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable; //Memory to memory mode disabled
 	  DMA_Init(DMA1_Channel3, &DMA_InitStructure);
-
-	  /* Enable DMA1 channel3 */
-	 // DMA_Cmd(DMA1_Channel3, ENABLE);
 }
 //////--------------------------------------------------------------------------------------
-//ïåðåäà÷à íà âûõîä (SPI1) äàííûõ
 void DMA1_Chan3_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -455,7 +380,6 @@ void DMA1_Chan3_init_set(u32 MemoryBaseAddr, u16 BufferSize)
 
 }
 //-----------------------------------------------------------------------------------------------------
-//ïåðåäà÷à íà âûõîä (SPI1) äàííûõ
 void DMA1_Chan3_init_set8_16(u32 MemoryBaseAddr, u16 BufferSize, u16 DataSizePer, u16 DataSizeMem)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -497,10 +421,6 @@ void DMA1_Channel3_IRQHandler(void)
 }
 
 //////--------------------------------------------------------------------------------------
-/*
- * Choice Channel 2 for DMA1, because SPI1 Rx can generate a DMA request to this channel only
- *
- */
 void DMA1_Chan2_init_set(u32 MemoryBaseAddr, u16 BufferSize, bool MemoryInc)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -567,10 +487,7 @@ void DMA1_Channel2_IRQHandler(void)
 	  FlagDMA1_Channel2_Trans_Yes =true;
 	 DMA_Cmd(DMA1_Channel2, DISABLE);
 }
-
-
 //-----------------------------------------
-
 
 void DMA1_Chan6_init(void)
 {
@@ -590,15 +507,11 @@ void DMA1_Chan6_init(void)
 	  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;//DMA_M2M_Enable; //Memory to memory mode Enable
 	  DMA_Init(DMA1_Channel6, &DMA_InitStructure);
-
-
-	  //Enable interrupt DMA1 channel2
+  //Enable interrupt DMA1 channel2
       DMA_ITConfig(DMA1_Channel6, DMA_IT_TC, ENABLE);
-
 	  //Enable DMA1 channel2
 	  DMA_Cmd(DMA1_Channel6, ENABLE); //
 }
-
 void DMA1_Channel6_IRQHandler(void)
 {
 	DMA_ClearITPendingBit(DMA1_IT_GL6);
@@ -628,30 +541,16 @@ void DMA1_Chan5_init(void)
 	  DMA_InitStructure1.DMA_Priority = DMA_Priority_High;
 	  DMA_InitStructure1.DMA_M2M = DMA_M2M_Disable;//DMA_M2M_Enable; //Memory to memory mode Enable
 	  DMA_Init(DMA1_Channel5, &DMA_InitStructure1);
-
-
 	  //Enable interrupt DMA1 channel5
       DMA_ITConfig(DMA1_Channel5, DMA_IT_TC, ENABLE);
-
-	  //Enable DMA1 channel5
-	//  DMA_Cmd(DMA1_Channel5, ENABLE); //
-
-	//  SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Tx,ENABLE);
 }
 //-------------------------------------------------------------
 void DMA1_Channel5_IRQHandler(void)
 {
 
 	DMA_ClearITPendingBit(DMA1_IT_GL5);
-	//SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Tx,DISABLE);
-	//DMA_Cmd(DMA1_Channel5, DISABLE);
-	//GPIO_WriteBit(GPIOB,GPIO_Pin_12,Bit_SET);
-
-	//SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Tx,DISABLE);
 	FlagDMA1_Channel5_Trans_Yes=true;
-
 	DMA_Cmd(DMA1_Channel5, DISABLE);
-//	GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_SET);
 }
 //-----------------------------------------------------------------------------------------
 /* Accelerometer Rx
@@ -677,14 +576,8 @@ void DMA1_Chan4_init(void)
 	  DMA_InitStructure1.DMA_Priority = DMA_Priority_High;
 	  DMA_InitStructure1.DMA_M2M = DMA_M2M_Disable;//DMA_M2M_Enable; //Memory to memory mode Enable
 	  DMA_Init(DMA1_Channel4, &DMA_InitStructure1);
-
-
 	  //Enable interrupt DMA1 channel4
       DMA_ITConfig(DMA1_Channel4, DMA_IT_TC, ENABLE);
-
-	  //Enable DMA1 channel4
-	//  DMA_Cmd(DMA1_Channel4, ENABLE); //
-
 }
 //-------------------------------------------------------------
 void DMA1_Channel4_IRQHandler(void)
@@ -729,10 +622,7 @@ void DMA1_Channel4_IRQHandler(void)
 			    if(Flag_OverflowAcceler&&(temp_DataAcceler_Z==MAX_Value_Acceler_PLUS))Count_Overflow_Z_PLUS++;
 			    if(Flag_OverflowAcceler&&(temp_DataAcceler_Z==MAX_Value_Acceler_MINUS))Count_Overflow_Z_MINUS++;
 //-------------------------------------------------------------------------------------------------------------
-
-			    //FlagForDataPause - ïî ôðîíòó òîêîâîé ïàóçû false
-					if(FlagForDataPause&&CountInterruptCapture_Timer4>=QuantityReceiveDataAcceler_SPI)//îãðàíè÷èì ê-âî
-						
+					if(FlagForDataPause&&CountInterruptCapture_Timer4>=QuantityReceiveDataAcceler_SPI)//îãðàíè÷èì ê-âî			
 							{
 
 						if(CountBuffForDataPause==1&&indexForDataPause<SizeDataPauseMax)
@@ -853,57 +743,27 @@ void DMA2_Channel1_IRQHandler(void)
 	Data_fromGyroscope = (u32*)&Data_from_Gyroscope_Byte[0];
 	Data_Giro_Gyroscope_temp = *Data_fromGyroscope;
 	Data_Giro_Gyroscope_temp >>= 4;
-	//Data_Giro_Gyroscope = (s16)Le16(Data_Giro_Gyroscope_temp) - Zero_rate_condition;
-
-	//if(CountData_Giro_Gyroscope>0)Data_Giro_Gyroscope = (u32)Data_Giro_Gyroscope_temp - Zero_rate_condition+1065 - Sum_Giro_Gyroscope/CountData_Giro_Gyroscope;
-	//else
 		Data_Giro_Gyroscope = (u32)Data_Giro_Gyroscope_temp - Zero_rate_condition;//+973;
-   
-/*
-		if(firDecimationCount>10) //×àñòîòà âûáîðîê äëÿ FIR 10 Hz
-		{
-			firDecimationCount=0;
-			SampleFilter_put(&sf, Data_Giro_Gyroscope);
-			filtredValue= SampleFilter_get(&sf);
-		}
-		firDecimationCount++;
-		Data_Giro_Gyroscope-=filtredValue;
-*/
-	//if(abs(Data_Giro_Gyroscope2-Data_Giro_Gyroscope)>100)
 		Sum_Giro_Gyroscope += Data_Giro_Gyroscope;
-
-	//	CountData_Giro_Gyroscope++;
-
 	DMA2_Channel2->CMAR=(u32)&Command_to_Gyroscope_Choice_Channel_Byte[3]; //[3,4,5] 2-byte - Measure Temperature
-	//äëÿ òåñòèðîâàíèÿ
-	//DMA2_Channel2->CMAR=(u32)&Command_to_Gyroscope_Choice_Channel_Byte[0]; //[0,1,2]
-
 	GPIO_WriteBit(GPIOB,GPIO_Pin_6,Bit_RESET);//'MSEL2' -> '0' - choice channel in gyroscope by SPI3
-
-	//DiffCount_Gyroscope_interrupt++;
-	//if(DiffCount_Gyroscope_interrupt>1)DiffCount_Gyroscope_interrupt=0;
   }
 
 	if(Count_Gyroscope_interrupt==9)
 		{
 		GPIO_WriteBit(GPIOB,GPIO_Pin_6,Bit_SET);    //'MSEL2' -> '1' by SPI3
-	//	DMA2_Channel2->CMAR=(u32)&Command_to_Gyroscope_Choice_Channel_Byte[Count_Gyroscope_interrupt];
 		GPIO_WriteBit(GPIOA,GPIO_Pin_15,Bit_RESET); //'MSEL1' -> '0' - read data from gyroscope by SPI3
 		}
 
   if(Count_Gyroscope_interrupt==12)
    {
  	  GPIO_WriteBit(GPIOA,GPIO_Pin_15,Bit_SET); //'MSEL1' -> '1' - end read data from gyroscope by SPI3
-
  		TempForDataGyr=Data_from_Gyroscope_Byte[0];Data_from_Gyroscope_Byte[0]= Data_from_Gyroscope_Byte[2]; Data_from_Gyroscope_Byte[2]=TempForDataGyr;
  		Data_fromGyroscope = (u32*)&Data_from_Gyroscope_Byte[0];
  		Data_Giro_Gyroscope_temp = *Data_fromGyroscope;
  		Data_Giro_Gyroscope_temp >>= 4;
  		Data_Temperature_Gyroscope = Data_Giro_Gyroscope_temp;
  	   }
-
-
-
 	DMA2_Channel2->CNDTR=Quantity_DataGyroscope;
 
 	DMA2_Channel1->CMAR=(u32)&Data_from_Gyroscope_Byte[0];

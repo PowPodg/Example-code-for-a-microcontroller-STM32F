@@ -206,11 +206,6 @@ void Set_Data_for_Accelerometer(void)
 	Error_AllocationMemory=0;
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-/*
- * Array of the commands for choice channel Gyroscope in a cycle, with the timer3_Ch3 through SPI3
- * For array 'Data_from_Gyroscope_Byte' gyroscope need MINIMUM OF 20 CLOCK CYCLES ARE REQUIRED FOR 14-BIT CONVERSION, so 3 byte (24 clock cycles)
- * for array 'Command_to_Gyroscope_Choice_Channel_Byte' -  do the same, (although do not it do so)
- */
 void SET_Command_to_GYROSCOPE_Init(void) {
 	Command_to_Gyroscope_Choice_Channel_Byte[0] = 0x00;  //1 byte for 8 clock cycles
 	Command_to_Gyroscope_Choice_Channel_Byte[1] = 0x00;  //2 byte for 16 clock cycles
@@ -259,36 +254,16 @@ SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
 SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
 SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-//36 MHz/8 = 4.5 MHz for SCA3100 Tsck min = 120 ns (8.3333333 MHz)
-//if 36 MHz/4 = 9 MHz>8.3333333 MHz, because choice 36 MHz/8
 SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
 SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-//The CRC polynomial (0007h) is the reset value of this register.
-//SPI_InitStructure.SPI_CRCPolynomial = 0x07;
 SPI_Init(SPI2, &SPI_InitStructure);
 
-//SPI_SSOutputCmd(SPI2,ENABLE);
-
-/* Enable the RxNE interrupt */
-//SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_RXNE, ENABLE);
-//SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Tx,ENABLE);
-//SPI_I2S_SendData(SPI2, 0);
 SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Tx,ENABLE);
 SPI_I2S_DMACmd(SPI2,SPI_I2S_DMAReq_Rx,ENABLE);
 
 /* Enable SPI */
 SPI_Cmd(SPI2, ENABLE);
 
-}
-//-----------------------------------interrupt SPI2----------------------------------------
-void SPI2_IRQHandler(void) {
-	//SPI_I2S_SendData(SPI2, 0);
-	//SPI_I2S_ClearITPendingBit(SPI2,SPI_I2S_IT_OVR|SPI_IT_MODF|SPI_IT_MODF|SPI_I2S_IT_ERR );
-	//SPI_I2S_ClearFlag(SPI2, SPI_I2S_IT_OVR|SPI_IT_MODF|SPI_IT_MODF|SPI_I2S_IT_ERR);
-	//if(SPI_I2S_GetITStatus(SPI2, SPI_I2S_IT_RXNE) == SET)
-	//	{
-//	if(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY)) GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_SET);//GPIO_WriteBit(GPIOB,GPIO_Pin_12,Bit_SET); //SS -> '1'
-	//	}
 }
 
 //-------------------------------------------------------------------------
@@ -300,26 +275,15 @@ SPI_StructInit(&SPI_InitStructure);
 
 
 SPI_Init(SPI1, &SPI_InitStructure);
-
-/* Enable the RxNE interrupt */
-//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_RXNE, ENABLE);
-//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE);
-
 // Enable SPI1 DMA
 SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Tx,ENABLE);// DMA immediately writes 1 element array data into  SPI_DR  ??????
 SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Rx,ENABLE);
-
 /* Enable SPI */
 SPI_Cmd(SPI1, ENABLE);
-
 }
 
 void SPI1_MAIN_Init_16(void) {
 SPI_InitTypeDef SPI_InitStructure;
-/* SPI configuration -------------------------------------------------------*/
-//SPI_StructInit(&SPI_InitStructure);
-
-
 SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
 SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
 SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
@@ -331,17 +295,10 @@ SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
 SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;//SPI_FirstBit_MSB;
 //The CRC polynomial (0007h) is the reset value of this register.
 SPI_InitStructure.SPI_CRCPolynomial = 0x07;
-
-//SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_RxOnly;
-
 SPI_Init(SPI1, &SPI_InitStructure);
 
-/* Enable the RxNE interrupt */
-//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_RXNE, ENABLE);
-//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE);
-
 // Enable SPI1 DMA
-SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Tx,ENABLE);// DMA immediately writes 1 element array data into  SPI_DR  ??????
+SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Tx,ENABLE);
 SPI_I2S_DMACmd(SPI1,SPI_I2S_DMAReq_Rx,ENABLE);
 
 /* Enable SPI */
@@ -385,21 +342,6 @@ SPI_I2S_DMACmd(SPI3,SPI_I2S_DMAReq_Rx,ENABLE);
 /* Enable SPI */
 SPI_Cmd(SPI3, ENABLE);
 }
-
-//------------------------------------------------------------------------------------------
-/*
- * 1. fist byte after failing edge SS - Command
- * 2. second byte:
- *               - Command 'Command_FillingArray_Time_UI' - quantity of words (in 2 bytes) after this command
- *               - Command 'Command_StartMeasurement' - byte with Flags - 'Flag_Array_I' only I; 'Flag_Array_U' only U; 'Flag_Array_I_U' I and U
- *               - Command 'Command_DataRequest' here haven't second byte
- */
-void SPI1_IRQHandler(void)
-{
-
-
-}
-//---------------------------------------------------------------------------------------------
 
 //---------------Recommended start-up sequence accelerometer-------------------------------
 void Start_Up_Accelerometer(void)
@@ -447,9 +389,7 @@ void Start_Up_Accelerometer(void)
 		  SPI_I2S_ReceiveData(SPI2);
 		  GPIO_WriteBit(GPIOB,GPIO_Pin_12,Bit_SET); //'SS' SPI2 -> '1'
 //-----------------------------------------------------------------------------------------------------------------
-
 	 delay_us(10000); //Wait 10ms
-
 	//---1 byte--------------------------Read CTRL-----------------------------------------------------
 	    GPIO_WriteBit(GPIOB,GPIO_Pin_12,Bit_RESET); //'SS' SPI2 -> '0' - begin request data from accelerometer by SPI
 

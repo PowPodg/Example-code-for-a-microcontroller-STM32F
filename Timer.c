@@ -71,14 +71,7 @@ void Timer1_Init(void)
 	//Enable the Capture Compare 1 Interrupt source
 	TIM_ITConfig(TIM1, TIM_IT_CC1, ENABLE);
 
-    /* Timing Mode configuration: Channel1 */
-	//default  - channel1 of the Timer1 is configured as output compare (TIMx-1CCMR1 - bits CC1S:00)
- //   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing ;
- //   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
-
- //   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-
-    TIM_OCStructInit(&TIM_OCInitStructure);//initial default
+        TIM_OCStructInit(&TIM_OCInitStructure);//initial default
     /* Set the Capture Compare Register value */
     TIM_OCInitStructure.TIM_Pulse = WIDTH_PULSE_TIM1_TIM3;//max pulse value - a temporary value 500 us
     //TIM_SetCompare1(TIM1,uint16_t value)-then here you need to specify a value with an array of timer!!!!!!
@@ -94,7 +87,6 @@ void TIM1_CC_IRQHandler(void)
 	//if interrupt happens the do this
 	if(TIM_GetITStatus(TIM1, TIM_IT_CC1) != RESET)
 	{
-
 	//clear interrupt and start counting again to get precise freq
 	TIM_ClearITPendingBit(TIM1, TIM_IT_CC1);
 	//TIM_ClearFlag(TIM1, TIM_FLAG_CC1);
@@ -105,12 +97,9 @@ void TIM1_CC_IRQHandler(void)
 	  //For the second and subsequent points voltage and current start ADC1, ADC3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE); //Start ADC1 Software Conversion
 	ADC_SoftwareStartConvCmd(ADC3, ENABLE); //Start ADC3 Software Conversion
-
 	// temp_Value_for_Timer1_pointer = (u16*)&Arr_SetTimer_for_Sampling_U_I[CountInterruptCapture_Timer1*2];
-  
     TIM1->CNT=0;
      CountInterruptCapture_Timer1 ++;
-
      }
 //----------------------
     if(CountInterruptCapture_Timer1>=QuantityReceiveDataUI_SPI)
@@ -121,9 +110,6 @@ void TIM1_CC_IRQHandler(void)
     }
   }
 }
-//---------------------------------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------------------
 //Timer3 - for sampling data from accelerometer, gyroscope and Sync (use PWM) for module 'Data acquisition board' (communication through SPI1_Main)
 //-------------------------------------------------------------------------------------------------
 void Timer3_Init(void)
@@ -146,9 +132,7 @@ void Timer3_Init(void)
 	TIM_SelectOutputTrigger(TIM3, TIM_TRGOSource_OC2Ref); //TIM_TRGOSource_OC1Ref);!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     /* Timing Mode configuration: Channel3 */
-    TIM_OCStructInit(&TIM_OCInitStructure);//initial default
-
-
+    TIM_OCStructInit(&TIM_OCInitStructure);//initial defaul
     /* PWM1 Mode configuration: Channel3 */
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -165,14 +149,10 @@ void Timer3_Init(void)
     // TIM_OCInitStructure.TIM_OutputState = TIM._OutputState_Enable;
      TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 
-     TIM_OC2Init(TIM3, &TIM_OCInitStructure);  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     TIM_OC2Init(TIM3, &TIM_OCInitStructure); 
+     TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
      TIM_ARRPreloadConfig(TIM3, ENABLE);
-
-	//Configures the TIM3 DMA interface.
-//	TIM_DMAConfig(TIM3,TIM_DMABase_CCR3,0);
-
      //Enables the TIM3 DMA Requests for GK. TIM3 DMA_sources is 'TIM_DMA_CC1'
     TIM_DMACmd(TIM3, TIM_DMA_CC1, ENABLE);
 
@@ -236,24 +216,10 @@ void TIM3_IRQHandler(void)
 	DMA_Cmd(DMA2_Channel2, ENABLE);//Tx
 	DMA_Cmd(DMA2_Channel1, ENABLE);//Rx
 	Count_Gyroscope_interrupt += 3;
-
-//	TIM_SetCounter(TIM3, 0); //reset CNT
-//	if(temp==0)GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_SET);
-//	if(temp==1) GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
-//	temp++;
-//	if(temp>1)temp=0;
 	}
 
-	/*	if(TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET)
-		{
-		TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);
-		} */
 }
 //-------------------------------------------------------
-/*
- * This timer use for filling an array 'Arr_SetTimer_for_Sampling_Acceler'
- * 1 count = 500us
- */
 void Timer4_Init(void)
 {
 
@@ -279,21 +245,10 @@ void Timer4_Init(void)
 
 	//Enable the Capture Compare 1 Interrupt source
 	TIM_ITConfig(TIM4, TIM_IT_CC1, ENABLE);
-
-    /* Timing Mode configuration: Channel1 */
-	//default  - channel1 of the Timer1 is configured as output compare (TIMx-1CCMR1 - bits CC1S:00)
- //   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing ;
- //   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
-
- //   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-
-    TIM_OCStructInit(&TIM_OCInitStructure);//initial default
+      TIM_OCStructInit(&TIM_OCInitStructure);//initial default
     /* Set the Capture Compare Register value */
     TIM_OCInitStructure.TIM_Pulse = 1;//max pulse value - a temporary value !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //  TIM_SetCompare1(TIM4,uint16_t value);//-then here you need to specify a value with an array of timer!!!!!!
-
-    TIM_OC1Init(TIM4, &TIM_OCInitStructure);
-    //TIM_Cmd(TIM4,ENABLE);
+     TIM_OC1Init(TIM4, &TIM_OCInitStructure);
 }
 
 
@@ -309,9 +264,6 @@ void TIM4_IRQHandler(void)
    //(X,Y,Z, +X_Count_Error, -X_Count_Error, +Y_Count_Error, -Y_Count_Error, +Z_Count_Error, -Z_Count_Error, speed V, move S, Temperature)
 	    if(CountInterruptCapture_Timer4==sizeof(*temp_Value_for_Timer4_pointer))
 	    {
-		    //	 temp_GK_Data = DataCNT_TIM8;
-		    //	 temp_GK_Time_count = Count_DMA_TIM3;
-		    	// TIM8->CNT=0;
 	    	temp_GK_Data = DataCNT_TIM8;
 	    	temp_GK_Time = Count_DMA_TIM3;
 	    	TIM8->CNT=0;
@@ -357,13 +309,8 @@ void TIM4_IRQHandler(void)
 	      temp_Value_for_DataOut_pointer = (s16*)&Array_Total_DataOut[CountTotal_DataOut];
 	      *temp_Value_for_DataOut_pointer = Data_Giro_Gyroscope;;  //data Gyroscope
 	      CountTotal_DataOut +=sizeof(*temp_Value_for_DataOut_pointer);
-
-//----------
-		//  temp_Value_for_Timer4_pointer = (u16*)&Arr_SetTimer_for_Sampling_Acceler[CountInterruptCapture_Timer4*2];//- ïîêà ÷òî-òî íå ðàáîòàåò (ïðåäïîëîæèòåëüíî- ìíîãî ïðåðûâàíèé)
-		//  TIM_SetCompare1(TIM4, *temp_Value_for_Timer4_pointer);
 	   TIM4->CNT=0;
 	      CountInterruptCapture_Timer4++;
-	//      GPIO_WriteBit(GPIOB,GPIO_Pin_0,Bit_RESET);
 
      }
 	//----------------------
@@ -401,15 +348,6 @@ void TIM4_IRQHandler(void)
 	    	temp_SumSpeed_pointer = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumSpeed_pointer = tempSum_forSpeed_Z;      //Sum for Speed Z
 	    	CountTotal_DataOut +=sizeof(*temp_SumSpeed_pointer);
-
-//	    	((int_fast64_t*)&(Array_Total_DataOut[CountTotal_DataOut]))[0] =  tempSum_forMove_X;
-	    //	*temp_SumMove_pointer =  tempSum_forMove_X;       //Sum for Move X
-//	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer);
-
-	    	//temp_SumMove_pointer = &Array_Total_DataOut[CountTotal_DataOut];  //íå ðàáîòàåò 64 üèòíîå ïðèñâîåíèå  ïðèäåòñÿ â äâà ýòàïà ïî 32 áèòà!!!!!!!!!!!!!!!!!!
-	    	//*temp_SumMove_pointer =  tempSum_forMove_X;       //Sum for Move X
-	    	//CountTotal_DataOut +=sizeof(*temp_SumMove_pointer);
-
 	    	temp_SumMove_pointer32bit_L= (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_L =  tempSum_forMove_X;       //Sum for Move X Low 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_L);
@@ -417,11 +355,6 @@ void TIM4_IRQHandler(void)
 	    	temp_SumMove_pointer32bit_H= (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_H =  (tempSum_forMove_X>>32);       //Sum for Move X High 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_H);
-
-	   // 	temp_SumMove_pointer = &Array_Total_DataOut[CountTotal_DataOut];//íå ðàáîòàåò 64 üèòíîå ïðèñâîåíèå  ïðèäåòñÿ â äâà ýòàïà ïî 32 áèòà!!!!!!!!!!!!!!!!!!
-	   // 	*temp_SumMove_pointer =  tempSum_forMove_Y;       //Sum for Move Y
-	    //	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer);
-
 	    	temp_SumMove_pointer32bit_L = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_L =  tempSum_forMove_Y;       //Sum for Move Y Low 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_L);
@@ -429,11 +362,6 @@ void TIM4_IRQHandler(void)
 	    	temp_SumMove_pointer32bit_H = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_H =  (tempSum_forMove_Y>>32);       //Sum for Move Y High 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_H);
-
-	//    	temp_SumMove_pointer = &Array_Total_DataOut[CountTotal_DataOut];//íå ðàáîòàåò 64 üèòíîå ïðèñâîåíèå  ïðèäåòñÿ â äâà ýòàïà ïî 32 áèòà!!!!!!!!!!!!!!!!!!
-	 //   	*temp_SumMove_pointer =  tempSum_forMove_Z;       //Sum for Move Z
-	//    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer);
-
 	    	temp_SumMove_pointer32bit_L = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_L =  tempSum_forMove_Z;       //Sum for Move Z Low 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_L);
@@ -441,28 +369,19 @@ void TIM4_IRQHandler(void)
 	    	temp_SumMove_pointer32bit_H = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*temp_SumMove_pointer32bit_H =  tempSum_forMove_Z;       //Sum for Move Z High 32 bits
 	    	CountTotal_DataOut +=sizeof(*temp_SumMove_pointer32bit_H);
-
     //------------------------Gyro giroscope------------------------------------
-
             	tempGiro_Gyroscope_pointer = (s32*)&Array_Total_DataOut[CountTotal_DataOut];
     	    	*tempGiro_Gyroscope_pointer = tempSum_Giro_Gyroscope; // Sum Gyroscope
     	    	CountTotal_DataOut +=sizeof(*tempGiro_Gyroscope_pointer);
-
     //---------------------Temperature Accelerometer--------
-
 	    	tempTemperature_pointer = (u16*)&Array_Total_DataOut[CountTotal_DataOut];
 	    	*tempTemperature_pointer = tempTemperature_Acceler; // Temperature Accelerometer
 	    	CountTotal_DataOut +=sizeof(*tempTemperature_pointer);
-
-
 //------------------------Gyroscope temperature------------------------------------
-
-                	temp_Temper_Gyroscope_pointer = (u16*)&Array_Total_DataOut[CountTotal_DataOut];
+              	temp_Temper_Gyroscope_pointer = (u16*)&Array_Total_DataOut[CountTotal_DataOut];
         	    	*temp_Temper_Gyroscope_pointer = temp_Temperature_Gyroscope; // Temperature Gyroscope
         	    	CountTotal_DataOut +=sizeof(*temp_Temper_Gyroscope_pointer);
-
 //----------------data GK
-
                 temp_GK_Data_pointer = (u16*)&Array_Total_DataOut[CountTotal_DataOut];
     			*temp_GK_Data_pointer = temp_GK_Data;  //data GK
     			CountTotal_DataOut +=sizeof(*temp_GK_Data_pointer);
@@ -471,7 +390,6 @@ void TIM4_IRQHandler(void)
     			*temp_GK_Time_count = temp_GK_Time;  //data Time for GK (count for 500 us)
     			CountTotal_DataOut +=sizeof(*temp_GK_Time_count);
 //-----------------------------------------
-     //disabled timer TIM4,  if value 'CountInterruptCapture_Timer4' is more the last element of the array
 		TIM_Cmd(TIM4,DISABLE);
 
 		TIM_SetCounter(TIM4, 0); //reset CNT
@@ -486,8 +404,6 @@ void TIM4_IRQHandler(void)
 	}   //end if(TIM_GetITStatus(TIM4, TIM_IT_CC1) != RESET)
 }
 //-------------------------------------------------------------------------------------------------
-// For a sample of one data Accelerometer----------------
-//----------for Add Command Accelerometer - Temperature, registers---------------------------------------------------------------------------------------
 void Timer2_Init(void)
 {
 	Flag_TIM2_IRQHandler=false; Count_TIM2_IRQHandler=0;
@@ -542,7 +458,7 @@ void Delay_by_Timer6(u16 inValue)
 {
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 
-	TIM_TimeBaseStructure.TIM_Prescaler = 720;//?????????????????????????????????????????????????????//APB1 AHB_CLK = 36MHz, for time cycle input frequency Timer5 = 10us
+	TIM_TimeBaseStructure.TIM_Prescaler = 720;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	//division ratio between the timer clock (CK_INT) frequency and the dead-time and sampling clock
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -568,12 +484,7 @@ void Delay_by_Timer6(u16 inValue)
 void Timer8_Init(void)
 {
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	//TIM_OCInitTypeDef  TIM_OCInitStructure;
-
-//Configures the External clock Mode2 for GK
 	TIM_ETRClockMode2Config(TIM8,TIM_ExtTRGPSC_OFF,TIM_ExtTRGPolarity_NonInverted,0);
-
-
 	TIM_TimeBaseStructure.TIM_Prescaler = 0;//
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	//division ratio between the timer clock (CK_INT) frequency and the dead-time and sampling clock
@@ -581,23 +492,6 @@ void Timer8_Init(void)
 	TIM_TimeBaseStructure.TIM_Period = 65535;  //All time period = 655,35 ms
 
 	TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
-
-	//Enable the Capture Compare 1 Interrupt source
-	//TIM_ITConfig(TIM8, TIM_IT_CC1, ENABLE);
-
-    /* Timing Mode configuration: Channel1 */
-	//default  - channel1 of the Timer1 is configured as output compare (TIMx-1CCMR1 - bits CC1S:00)
- //   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing ;
- //   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable;
-
- //   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-
-   // TIM_OCStructInit(&TIM_OCInitStructure);//initial default
-    /* Set the Capture Compare Register value */
-  //  TIM_OCInitStructure.TIM_Pulse = 1;//max pulse value - a temporary value !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //  TIM_SetCompare1(TIM8,uint16_t value);//-then here you need to specify a value with an array of timer!!!!!!
-
- //   TIM_OC1Init(TIM8, &TIM_OCInitStructure);
     TIM_Cmd(TIM8,ENABLE);
 }
 

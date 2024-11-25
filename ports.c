@@ -89,13 +89,6 @@ void Ports_Config(void)
 
     GPIO_WriteBit(GPIOB,GPIO_Pin_12,Bit_SET);
 
-    /* Configure PB.12 as with Alternate function output push-pull, because use GPIO */
-   /*  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_12;
-     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //output Push-pull forPB12 - SS SPI2 (hardware mode)
-     GPIO_Init(GPIOB , &GPIO_InitStructure);
-*/
-
     /* Configure PB.00,as with Alternate function output Push-pull, because use out TIM3 PWM, and not GPIO*/
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -121,19 +114,11 @@ void Ports_Config(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //output Push-pull for PC10 - TX USART3, PC15 - CK USART3
     GPIO_Init(GPIOC , &GPIO_InitStructure);
-    /* Configure PC.7,as with Alternate function output Push-pull, because use out TIM3 CH2 PWM, and not GPIO */
-  //  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_8;
-  //  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  //  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //output Push-pull for PC7
- //   GPIO_Init(GPIOC , &GPIO_InitStructure);
-
     /* Configure PC.04, PC.05  as input Input with IN_FLOATING  */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;// | GPIO_Pin_6;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; // GPIO_Mode_IN_FLOATING; //input FLOATING for PA5 - 'Res1' (see electrical schematic) for synchronization receive data by SPI3
     GPIO_Init(GPIOC , &GPIO_InitStructure);
     //Configure EXTI Line5 PC.04, PC.05 to generate an interrupt on rising or falling edge
-    // Connect EXTI Line4 to PC4, Line5 to PC5,
-
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource4); //Res
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource5); //Res1
 
@@ -177,17 +162,6 @@ void EXTI4_IRQHandler(void)
 {
 	EXTI_ClearFlag(EXTI_Line4);
 
-	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==Bit_RESET)
-	{
-		
-//	TIM_Cmd(TIM1,DISABLE);//òàéìåð äëÿ îïðîñà ADC1 ADC3
-//	TIM_SetCounter(TIM1, 0); //reset CNT
-//	CountInterruptCapture_Timer1=0;
-
-     }
-	/*
-
-	 */
 	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4)==Bit_SET)
 	{
 
@@ -196,8 +170,6 @@ void EXTI4_IRQHandler(void)
 	    Count_Overflow_Z_PLUS=0; Count_Overflow_Z_MINUS=0;
 
 	    CountTotal_DataOut=2; 
-
-
 	    for(j=2;j<1+(QuantityReceiveByteUI_SPI*2);j++)Array_Total_DataOut[j]=0;
 
 		temp_start_addr = (u32)&Array_Total_DataOut[CountTotal_DataOut];
@@ -216,14 +188,11 @@ void EXTI4_IRQHandler(void)
 	    CountInterruptCapture_Timer4=0;
 
         TIM_Cmd(TIM4,ENABLE);//Note that the counter starts counting 1 clock cycle after setting the CEN bit
-
 	}
-
 }
 
 void EXTI9_5_IRQHandler(void)
 {
-//	u8 temp = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5);
 	EXTI_ClearFlag(EXTI_Line5);
 	if(!(GPIOC->IDR & GPIO_Pin_5))
 	{
@@ -231,22 +200,13 @@ void EXTI9_5_IRQHandler(void)
      	FlagDMA1_Channel2_Trans_Yes=false;
 
 	}
-	else//ïî ôðîíòó SS
+	else
 	    {
   		FlagDMA1_Channel3_Trans_Yes=false;
      	FlagDMA1_Channel2_Trans_Yes=false;
+     	Array_CommandIn[0]=0;
 
-	//	temp_start_addr = (u32)&Array_CommandIn[0];
-	  //  DMA1_Chan2_init_set(temp_start_addr,5,true);
-	//    if(!(GPIOB->IDR & GPIO_Pin_0))
-	//    {
-	  //   GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-     //	 GPIO_WriteBit(GPIOA,GPIO_Pin_11,Bit_SET);
-	//    }
-     //	 free(Arr_SetTimer_for_Sampling_U_I);
-     	Array_CommandIn[0]=0;//îáíóëÿåì ýëåìåíò äëÿ êîìàíäû
-
-         }  //end else
+         } 
 }
 
 
